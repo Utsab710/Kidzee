@@ -1,0 +1,15 @@
+@keyframes floatLeftRight {
+  0% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(-10px);
+  }
+}
+
+.floating-cloud {
+  animation: floatLeftRight 2s ease-in-out infinite;
+}
