@@ -1,0 +1,48 @@
+/* parallax.css */
+
+.card-container {
+  perspective: 1000px;
+}
+
+.card-parallax {
+  position: relative;
+  transition: all 0.4s ease;
+  backface-visibility: hidden;
+}
+
+/* Create the effect where non-hovered cards become less visible */
+.card-container:hover .card-parallax:not(:hover) {
+  filter: blur(2px) brightness(0.8);
+  transform: scale(0.95) translateZ(-20px);
+  opacity: 0.7;
+}
+
+/* Enhance the hovered card */
+.card-container .card-parallax:hover {
+  transform: scale(1.05) translateZ(20px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+/* Subtle animation for circle border on hover */
+.card-parallax:hover .border-dashed {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Make sure transitions feel smooth */
+* {
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
