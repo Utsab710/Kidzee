@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "../Button/Button"; // Adjust the import path as needed
 
 const Card = ({ image, title, description, buttonText }) => {
   return (
@@ -9,9 +10,7 @@ const Card = ({ image, title, description, buttonText }) => {
         <p className="text-gray-700 text-base">{description}</p>
       </div>
       <div className="px-6 py-4">
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">
-          {buttonText}
-        </button>
+        <Button text={buttonText} />
       </div>
     </div>
   );

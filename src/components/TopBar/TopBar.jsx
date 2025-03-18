@@ -2,9 +2,6 @@ import React from "react";
 import { MdOutlineEmail } from "react-icons/md";
 import { MdOutlineLocalPhone } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
-import { FaFacebook } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 
 function TopBar() {
   return (

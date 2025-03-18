@@ -10,7 +10,6 @@ function Home() {
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
-
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY && currentScrollY > 50) {
@@ -20,12 +19,10 @@ function Home() {
       }
       lastScrollY = currentScrollY;
     };
-
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll); // Cleanup
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Define slides data
   const slides = [
     {
       title: "Embark on a new journey of empowerment",
@@ -35,19 +32,19 @@ function Home() {
         "https://kidzeeboudha.com/upload_file/banner/1682070289_1471951331_education-girl.png",
     },
     {
-      title: "Discover a world of learning",
-      subtitle: "Explore Our Programs",
-      buttonText: "Learn More",
+      title:
+        "A wonderful environment where children can learn and grow. a world of learning",
+      subtitle: "Age-Appropriate Knowledge",
+      buttonText: "Contact us",
       imageUrl:
         "https://kidzeeboudha.com/upload_file/banner/1682075046_1194578216_main-banner-1.png",
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden overflow-y-auto">
       <TopBar />
       <Navbar className={isScrolled ? "navbar-hidden" : "navbar-visible"} />
-
       <div className="relative w-full bg-purple-50">
         <div className="absolute top-4 left-4 z-40">
           <img
@@ -56,11 +53,7 @@ function Home() {
             className="w-auto floating-cloud"
           />
         </div>
-
-        {/* Use the Slider component */}
         <Slider slides={slides} />
-
-        {/* Moved banner section slightly higher */}
         <div className="banner bg-violet-200 relative -mt-10 floating-cloud">
           <img src="https://kidzeeboudha.com/assets/site/img/main-banner/banner-bg-shape-1.png" />
         </div>

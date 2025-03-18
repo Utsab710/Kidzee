@@ -6,7 +6,7 @@ import { FaXTwitter } from "react-icons/fa6";
 function Navbar({ className }) {
   return (
     <div
-      className={`flex gap-x-8 gap-y-4 w-full py-4 bg-white shadow-md ${className}`} // Added bg-white and shadow-md for visibility
+      className={`flex  w-full py-6 bg-white shadow-md ${className}`} // Added bg-white and shadow-md for visibility
     >
       <div className="space-x-6 ml-25 items-center">
         <img src={kidzee} alt="kidzee logo" className="w-32 h-auto" />
