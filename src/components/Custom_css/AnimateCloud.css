@@ -10,6 +10,22 @@
   }
 }
 
+@keyframes floatTopBottom {
+  0% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
 .floating-cloud {
   animation: floatLeftRight 2s ease-in-out infinite;
+}
+
+.floating-owl {
+  animation: floatTopBottom 4s ease-in-out infinite;
 }

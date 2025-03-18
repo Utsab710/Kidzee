@@ -18,7 +18,6 @@ function Form() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {/* Increased gap-4 to gap-6, mb-4 to mb-6 */}
           <div>
             <input
               id="name"
@@ -41,7 +40,6 @@ function Form() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {" "}
-          {/* Increased gap-4 to gap-6, mb-4 to mb-6 */}
           <div>
             <input
               id="phone"

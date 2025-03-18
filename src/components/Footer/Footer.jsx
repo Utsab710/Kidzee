@@ -7,7 +7,6 @@ function Footer() {
   return (
     <div className="w-full bg-cyan-100">
       <div className="container mx-auto px-4">
-        {/* Clouds positioned correctly */}
         <div className="relative">
           <img
             src="https://kidzeeboudha.com/assets/site/img/value/cloud-1.png"
@@ -35,9 +34,8 @@ function Footer() {
         </div>
       </div>
 
-      {/* Flower border */}
       <div className="relative">
-        <div className="w-full bg-green-500 h-8"></div>
+        <div className="w-full bg-white h-8"></div>
         <div className="absolute bottom-0 left-0 w-full">
           <img
             src="https://kidzeeboudha.com/assets/site/img/footer-top.png"
@@ -47,12 +45,12 @@ function Footer() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center w-full py-4">
-        <img src={kidzee} alt="kidzee logo" className="w-45 h-auto" />
+      <div className="w-full py-4 bg-white flex flex-col items-center ">
+        <img src={kidzee} alt="Kidzee logo" className="w-44 h-auto " />
+        <div className="w-full border-t border-gray-400 my-4"></div>
       </div>
 
-      <div className="w-full border-t border-gray-400 my-4"></div>
-      <div className="text-gray-600 text-center flex justify-center items-center pb-4">
+      <div className="text-gray-600 text-center flex justify-center items-center pb-4 bg-white">
         <p>Copyright @ 2025 Kidzee. All Rights Reserved by</p>
         <a
           href="https://kidzeeboudha.com/"
