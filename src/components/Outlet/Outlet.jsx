@@ -132,6 +132,36 @@ function Outlet() {
           </div>
         ))}
       </div>
+      <div className="bg-slate-200">
+        <div className="flex justify-between items-center w-full">
+          <div>
+            <div
+              className="w-40 h-40 rounded-full 
+                inline-flex items-center justify-center 
+                bg-white text-gray-700 text-xl font-bold z-10"
+            >
+              <div className="w-40 h-40 rounded-full inline-flex items-center justify-center bg-white text-gray-700 text-xl font-bold">
+                <img
+                  src="https://kidzeeboudha.com/upload_file/section/1682073132_1829721674_Untitled-1.png"
+                  alt="students"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section with Owl */}
+          <div className="flex items-center">
+            <img
+              src="https://kidzeeboudha.com/assets/site/img/who-we-are/who-we-are-shape.png"
+              alt="owl"
+              className="h-auto"
+            />
+
+            <div className="ml-2">About</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
