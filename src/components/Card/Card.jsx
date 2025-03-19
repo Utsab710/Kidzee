@@ -14,6 +14,10 @@ const Card = ({
     backgroundColor: backgroundColor,
     color: textColor,
     transition: "all 0.3s ease",
+    height: "100%", // Ensure card takes full height of container
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   };
 
   // Image size mapping
@@ -25,7 +29,7 @@ const Card = ({
 
   return (
     <div
-      className="rounded-lg overflow-hidden shadow-lg flex flex-col items-center text-center p-6 transform hover:scale-105 hover:z-10 card-parallax"
+      className="rounded-lg overflow-hidden shadow-lg flex flex-col items-center text-center p-10 transform hover:scale-105 hover:z-10 card-parallax"
       style={cardStyle}
     >
       {image && (

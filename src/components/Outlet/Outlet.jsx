@@ -1,15 +1,18 @@
-import React from "react";
-
-import "./parallax.css"; // We'll create this CSS file
+import React, { useEffect, useRef, useState } from "react";
 import Card from "../Card/Card";
+import "./parallax.css";
 
 function Outlet() {
+  const cardContainerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
+
   // Card data with appropriate colors matching the first image
   const cardData = [
     {
       id: 1,
       image:
-        "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
+        "https://digitallearning.eletsonline.com/wp-content/uploads/2015/01/preschool.jpg",
       title: "Interactive iLLUME",
       description:
         "Interactive iLLUME, is specifically designed to help children realize their exceptional capabilities in a methodical, synergetic, and self-paced manner.",
@@ -27,7 +30,7 @@ function Outlet() {
     {
       id: 3,
       image:
-        "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
+        "https://firststeps-preschool.com/wp-content/uploads/2024/03/Child-Leadership-Skill.jpg",
       title: "Leadership",
       description:
         "We envision today's children as tomorrow's leadership icons.",
@@ -44,6 +47,50 @@ function Outlet() {
     },
   ];
 
+  useEffect(() => {
+    // Create the Intersection Observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !animationComplete) {
+          setIsVisible(true);
+        } else if (!entry.isIntersecting && animationComplete) {
+          // When we scroll away and come back, we want to reset the animation
+          setIsVisible(false);
+          setAnimationComplete(false);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.1, // Trigger when 10% of the element is visible
+      }
+    );
+
+    // Observe the card container
+    if (cardContainerRef.current) {
+      observer.observe(cardContainerRef.current);
+    }
+
+    // Cleanup observer on component unmount
+    return () => {
+      if (cardContainerRef.current) {
+        observer.unobserve(cardContainerRef.current);
+      }
+    };
+  }, [animationComplete]);
+
+  // Set animation as complete after all cards have slid in
+  useEffect(() => {
+    if (isVisible) {
+      const timeoutId = setTimeout(() => {
+        setAnimationComplete(true);
+      }, cardData.length * 300 + 500); // Allow time for all cards to slide in plus a buffer
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isVisible, cardData.length]);
+
   return (
     <div>
       <div className="p-8">
@@ -55,18 +102,34 @@ function Outlet() {
         </div>
       </div>
 
-      {/* Parallax card container */}
-      <div className="card-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 md:px-8 pb-10">
-        {cardData.map((card) => (
-          <Card
+      {/* Card container with fixed sizing */}
+      <div
+        ref={cardContainerRef}
+        className="card-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 md:px-8 pb-10"
+      >
+        {cardData.map((card, index) => (
+          <div
             key={card.id}
-            image={card.image}
-            title={card.title}
-            description={card.description}
-            backgroundColor={card.backgroundColor}
-            textColor="white"
-            imageSize="medium"
-          />
+            className={`card-wrapper h-full w-full transition-all duration-700 ease-out ${
+              isVisible
+                ? "translate-x-0 opacity-100"
+                : "-translate-x-full opacity-0"
+            }`}
+            style={{
+              transitionDelay:
+                isVisible && !animationComplete ? `${index * 300}ms` : "0ms",
+              minHeight: "350px", // Ensure consistent height
+            }}
+          >
+            <Card
+              image={card.image}
+              title={card.title}
+              description={card.description}
+              backgroundColor={card.backgroundColor}
+              textColor="white"
+              imageSize="medium"
+            />
+          </div>
         ))}
       </div>
     </div>
