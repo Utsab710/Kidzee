@@ -1,58 +1,84 @@
 import React from "react";
 
 const Card = ({
-  image,
+  src,
   title,
   description,
   backgroundColor = "#FF6B6B",
   textColor = "white",
   imageSize = "medium",
   children,
+  className,
 }) => {
-  // Dynamic styles based on props
   const cardStyle = {
     backgroundColor: backgroundColor,
-    color: textColor,
     transition: "all 0.3s ease",
-    height: "100%", // Ensure card takes full height of container
+    height: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
   };
 
-  // Image size mapping
   const imageSizeClasses = {
-    small: "w-24 h-24",
-    medium: "w-32 h-32",
-    large: "w-40 h-40",
+    small: "h-32",
+    medium: "h-48",
+    large: "h-64",
   };
+
+  const textStyles =
+    textColor === "custom"
+      ? {
+          titleColor: "#1A1A1A",
+          ageColor: "#FFD700",
+          descColor: "#333333",
+        }
+      : {
+          titleColor: textColor,
+          ageColor: textColor,
+          descColor: textColor,
+        };
 
   return (
     <div
-      className="rounded-lg overflow-hidden shadow-lg flex flex-col items-center text-center p-10 transform hover:scale-105 hover:z-10 card-parallax"
+      className={`rounded-lg overflow-hidden shadow-lg flex flex-col text-center card-parallax ${className}`}
       style={cardStyle}
     >
-      {image && (
-        <div className="relative mb-4">
-          <div
-            className="absolute inset-0 border-2 border-dashed border-white rounded-full"
-            style={{ transform: "scale(1.1)" }}
-          ></div>
+      {src && (
+        <div className="w-full">
           <img
             className={`${
               imageSizeClasses[imageSize] || imageSizeClasses.medium
-            } rounded-full object-cover`}
-            src={image}
+            } w-full object-cover pointer-events-none`} // Prevent image interaction
+            src={src}
             alt={title || "Card Image"}
+            draggable="false" // Prevent image drag
           />
         </div>
       )}
 
-      {title && <h2 className="font-bold text-2xl mb-3">{title}</h2>}
-
-      {description && <p className="mb-4">{description}</p>}
-
-      {children && <div className="mt-2">{children}</div>}
+      <div className="p-6 flex flex-col flex-grow justify-center">
+        {title && (
+          <h2
+            className="font-bold text-xl mb-2"
+            style={{ color: textStyles.titleColor }}
+          >
+            {title}
+          </h2>
+        )}
+        {description && (
+          <div className="text-sm">
+            <p
+              className="font-semibold mb-1"
+              style={{ color: textStyles.ageColor }}
+            >
+              {description.split("|")[0]}
+            </p>
+            <p style={{ color: textStyles.descColor }}>
+              {description.split("|")[1]}
+            </p>
+          </div>
+        )}
+        {children && <div className="mt-2">{children}</div>}
+      </div>
     </div>
   );
 };

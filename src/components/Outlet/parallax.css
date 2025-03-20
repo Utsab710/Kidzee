@@ -32,11 +32,6 @@
   transition: all 0.3s ease;
 }
 
-/* animation for circle border on hover */
-.card-parallax:hover .border-dashed {
-  animation: pulse 2s infinite;
-}
-
 @keyframes pulse {
   0% {
     transform: scale(1.1);
@@ -47,16 +42,4 @@
   100% {
     transform: scale(1.1);
   }
-}
-
-/* Ensure all cards are visible by default */
-.card-container > div {
-  will-change: transform, opacity;
-  visibility: visible !important;
-  opacity: 1;
-}
-
-/* Only apply the initial opacity-0 state when animation is not complete */
-.card-container > div.opacity-0 {
-  opacity: 0;
 }

@@ -3,20 +3,25 @@ import Card from "../Card/Card";
 import "./parallax.css";
 import AboutUs from "../AboutUs/AboutUs";
 import WhyChooseUs from "./WhyChooseUs";
-import CurriculumShow from "./CurriculumShowcase";
 import CurriculumShowcase from "./CurriculumShowcase";
+import ProgramCarousel from "./ProgramCarousel";
+import TestimonialSection from "./TestimonialSection";
 
 function Outlet() {
   const cardContainerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
 
-  // Card data with appropriate colors matching the first image
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   const cardData = [
     {
       id: 1,
-      image:
-        "https://digitallearning.eletsonline.com/wp-content/uploads/2015/01/preschool.jpg",
+      src: "https://digitallearning.eletsonline.com/wp-content/uploads/2015/01/preschool.jpg",
       title: "Interactive iLLUME",
       description:
         "Interactive iLLUME, is specifically designed to help children realize their exceptional capabilities in a methodical, synergetic, and self-paced manner.",
@@ -24,59 +29,87 @@ function Outlet() {
     },
     {
       id: 2,
-      image:
-        "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
+      src: "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
       title: "Kidzee Teachers",
       description:
         "Our training mechanism is designed to arm teachers with practical and effective techniques, which are best suited for kids.",
-      backgroundColor: "#AED75C", // Green color from the first image
+      backgroundColor: "#AED75C",
     },
     {
       id: 3,
-      image:
-        "https://firststeps-preschool.com/wp-content/uploads/2024/03/Child-Leadership-Skill.jpg",
+      src: "https://firststeps-preschool.com/wp-content/uploads/2024/03/Child-Leadership-Skill.jpg",
       title: "Leadership",
       description:
         "We envision today's children as tomorrow's leadership icons.",
-      backgroundColor: "#FFBE0B", // Yellow color from the first image
+      backgroundColor: "#FFBE0B",
     },
     {
       id: 4,
-      image:
-        "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
+      src: "https://kidzeeboudha.com/upload_file/offers/1682071709_7459002_Untitled-1.png",
       title: "MI-aided Methodology",
       description:
         "The mi-aided methodology helps children to discover their own creative and aesthetic potential.",
-      backgroundColor: "#3ABFF8", // Blue color from the first image
+      backgroundColor: "#3ABFF8",
     },
   ];
 
+  const programData = [
+    {
+      id: 1,
+      src: "https://images.unsplash.com/photo-1598928636135-d146006ff4be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      title: "Playgroup",
+      age: "1.5 - 2.5 Years",
+      description:
+        "Introduction to learning through play and social interaction.",
+      backgroundColor: "#FF6B6B",
+    },
+    {
+      id: 2,
+      src: "https://images.unsplash.com/photo-1621303837375-079c7c764f57?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      title: "Pre-Nursery",
+      age: "2.5 - 3.5 Years",
+      description:
+        "Building foundational skills through structured activities.",
+      backgroundColor: "#AED75C",
+    },
+    {
+      id: 3,
+      src: "https://images.unsplash.com/photo-1516534775068-ba3e7458af70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      title: "Kindergarten",
+      age: "3.5 - 5.5 Years",
+      description: "Preparing for formal education with advanced learning.",
+      backgroundColor: "#FFBE0B",
+    },
+    {
+      id: 4,
+      src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      title: "Daycare",
+      age: "1 - 6 Years",
+      description: "Safe and nurturing environment for all-day care.",
+      backgroundColor: "#3ABFF8",
+    },
+  ];
+
+  const extendedProgramData = [...programData, ...programData, ...programData];
+
   useEffect(() => {
-    // Create the Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && !animationComplete) {
           setIsVisible(true);
         } else if (!entry.isIntersecting && animationComplete) {
-          // When we scroll away and come back, we want to reset the animation
           setIsVisible(false);
           setAnimationComplete(false);
         }
       },
-      {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the element is visible
-      }
+      { root: null, rootMargin: "0px", threshold: 0.1 }
     );
 
-    // Observe the card container
     if (cardContainerRef.current) {
       observer.observe(cardContainerRef.current);
     }
 
-    // Cleanup observer on component unmount
     return () => {
       if (cardContainerRef.current) {
         observer.unobserve(cardContainerRef.current);
@@ -84,19 +117,111 @@ function Outlet() {
     };
   }, [animationComplete]);
 
-  // Set animation as complete after all cards have slid in
   useEffect(() => {
     if (isVisible) {
       const timeoutId = setTimeout(() => {
         setAnimationComplete(true);
-      }, cardData.length * 300 + 500); // Allow time for all cards to slide in plus a buffer
-
+      }, cardData.length * 300 + 500);
       return () => clearTimeout(timeoutId);
     }
   }, [isVisible, cardData.length]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isDragging) {
+        setCurrentIndex((prev) => (prev + 1) % programData.length);
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isDragging]);
+
+  const handleMouseDown = (e) => {
+    e.preventDefault(); // Prevent image drag behavior
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setScrollLeft(sliderRef.current.scrollLeft);
+    sliderRef.current.style.cursor = "grabbing";
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.clientX;
+    const walk = (startX - x) * 1.5;
+    sliderRef.current.scrollLeft = scrollLeft + walk;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    sliderRef.current.style.cursor = "default";
+    const cardWidth = sliderRef.current.offsetWidth / 3;
+    let newIndex = Math.round(sliderRef.current.scrollLeft / cardWidth);
+
+    newIndex = newIndex % programData.length;
+    if (newIndex < 0) newIndex += programData.length;
+    setCurrentIndex(newIndex);
+
+    setTimeout(() => {
+      if (sliderRef.current) {
+        sliderRef.current.scrollLeft =
+          cardWidth * (programData.length + newIndex);
+      }
+    }, 0);
+  };
+
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const x = e.touches[0].clientX;
+    const walk = (startX - x) * 1.5;
+    sliderRef.current.scrollLeft = scrollLeft + walk;
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const cardWidth = sliderRef.current.offsetWidth / 3;
+    let newIndex = Math.round(sliderRef.current.scrollLeft / cardWidth);
+
+    newIndex = newIndex % programData.length;
+    if (newIndex < 0) newIndex += programData.length;
+    setCurrentIndex(newIndex);
+
+    setTimeout(() => {
+      if (sliderRef.current) {
+        sliderRef.current.scrollLeft =
+          cardWidth * (programData.length + newIndex);
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+    if (sliderRef.current) {
+      const cardWidth = sliderRef.current.offsetWidth / 3;
+      sliderRef.current.scrollLeft = cardWidth * programData.length;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sliderRef.current && !isDragging) {
+      const cardWidth = sliderRef.current.offsetWidth / 3;
+      sliderRef.current.scrollTo({
+        left: cardWidth * (programData.length + currentIndex),
+        behavior: "smooth",
+      });
+    }
+  }, [currentIndex]);
+
   return (
     <div>
+      {/* First Section */}
       <div className="p-8">
         <div className="text-red-400 flex justify-center text-xl p-5">
           <h1>We offer best for your child</h1>
@@ -106,7 +231,7 @@ function Outlet() {
         </div>
       </div>
 
-      {/* Card container with fixed sizing */}
+      {/* First Card Container */}
       <div
         ref={cardContainerRef}
         className="card-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 md:px-8 pb-10"
@@ -122,11 +247,11 @@ function Outlet() {
             style={{
               transitionDelay:
                 isVisible && !animationComplete ? `${index * 300}ms` : "0ms",
-              minHeight: "350px", // Ensure consistent height
+              minHeight: "350px",
             }}
           >
             <Card
-              image={card.image}
+              src={card.src}
               title={card.title}
               description={card.description}
               backgroundColor={card.backgroundColor}
@@ -136,11 +261,19 @@ function Outlet() {
           </div>
         ))}
       </div>
+
+      {/* Other Components */}
       <div>
         <AboutUs />
       </div>
       <WhyChooseUs />
       <CurriculumShowcase />
+
+      {/* Programs Section with Slider */}
+      <div className="min-h-screen bg-sky-50 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <ProgramCarousel />
+      </div>
+      <TestimonialSection />
     </div>
   );
 }
