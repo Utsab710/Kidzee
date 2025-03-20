@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "../Card/Card";
 import "./parallax.css";
 import AboutUs from "../AboutUs/AboutUs";
+import WhyChooseUs from "./WhyChooseUs";
+import CurriculumShow from "./CurriculumShowcase";
+import CurriculumShowcase from "./CurriculumShowcase";
 
 function Outlet() {
   const cardContainerRef = useRef(null);
@@ -136,6 +139,8 @@ function Outlet() {
       <div>
         <AboutUs />
       </div>
+      <WhyChooseUs />
+      <CurriculumShowcase />
     </div>
   );
 }
