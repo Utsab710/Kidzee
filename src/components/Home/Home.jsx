@@ -3,7 +3,8 @@ import TopBar from "../TopBar/TopBar";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
 import Outlet from "../Outlet/Outlet";
-import Slider from "../Slider/Slider"; // Import the Slider component
+import Slider from "../Slider/Slider";
+import "../Custom_css/AnimateCloud.css";
 
 function Home() {
   const [isScrolled, setIsScrolled] = useState(false);

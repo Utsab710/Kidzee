@@ -29,18 +29,3 @@
 .floating-owl {
   animation: floatTopBottom 4s ease-in-out infinite;
 }
-
-@layer utilities {
-  .animate-marquee {
-    animation: marquee 15s infinite linear;
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(-70%);
-    }
-  }
-}

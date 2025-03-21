@@ -3,7 +3,6 @@ import kidzee from "../../image/kidzee.png";
 const Footer = () => {
   const [scrollY, setScrollY] = useState(0);
 
-  // Handle scroll for parallax effect
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -84,7 +83,7 @@ const Footer = () => {
               </div>
               <button
                 type="submit"
-                className="w-full bg-amber-500 hover:bg-olive-600 text-black py-3 rounded-md transition-colors duration-300"
+                className="w-full hover:bg-amber-700 cursor-pointer bg-amber-500 hover:bg-olive-600 text-black py-3 rounded-md transition-colors duration-300"
               >
                 Send
               </button>
@@ -99,7 +98,8 @@ const Footer = () => {
         style={{ transform: `translateY(${scrollY * -0.02}px)` }}
       >
         <a
-          href="#"
+          href="https://www.facebook.com/Kidzeeboudha"
+          target="_blank"
           className="text-gray-600 hover:text-[#D4A017] transition-colors duration-300"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,8 @@ const Footer = () => {
           </svg>
         </a>
         <a
-          href="#"
+          href="https://www.instagram.com/kidzee_boudha/"
+          target="_blank"
           className="text-gray-600 hover:text-[#D4A017] transition-colors duration-300"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">

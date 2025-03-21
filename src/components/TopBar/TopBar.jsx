@@ -2,7 +2,7 @@ import React from "react";
 import { MdOutlineEmail } from "react-icons/md";
 import { MdOutlineLocalPhone } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
-
+import "./TopBar.css";
 function TopBar() {
   return (
     <div className="bg-purple-700 w-full text-white py-4">
