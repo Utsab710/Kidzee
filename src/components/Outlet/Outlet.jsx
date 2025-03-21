@@ -224,10 +224,15 @@ function Outlet() {
       {/* First Section */}
       <div className="p-8">
         <div className="text-red-400 flex justify-center text-xl p-5">
-          <h1>We offer best for your child</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500 mb-8 p-5 text-center tracking-tight">
+            We Offer best for your child
+          </h1>
         </div>
         <div className="text-2xl flex justify-center font-bold">
-          <h1>What Do We Offer ?</h1>
+          <h2 className="text-4xl font-bold text-indigo-900 relative inline-block">
+            What do we offer?
+            <div className="absolute -bottom-3 left-0 right-0 h-1"></div>
+          </h2>
         </div>
       </div>
 

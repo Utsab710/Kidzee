@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const ProgramCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [startX, setStartX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [expandedCard, setExpandedCard] = useState(null);
-  const [imageErrors, setImageErrors] = useState({});
-  const [imagesLoaded, setImagesLoaded] = useState({});
+  const [userInteracting, setUserInteracting] = useState(false);
+  const autoSwipeTimerRef = useRef(null);
 
-  // Using your external image URLs
   const programs = [
     {
       title: "Senior K.G.",
       age: "4.5 - 5.5 Year",
       image:
-        "https://dreambigchildren.com/wp-content/uploads/2021/11/toddler-playgroups.jpeg",
+        "https://walnut.school/wp-content/uploads/2015/06/Jr-and-Sr-2015-photos-3-e1434040854560-900x546.jpg",
       color: "#FFF5F5",
       description:
         "Our Senior Kindergarten program focuses on preparing children for primary school through structured learning activities, phonics, early mathematics, and social development.",
@@ -32,36 +31,45 @@ const ProgramCarousel = () => {
       title: "Nursery",
       age: "2.5 - 3.5 Year",
       image:
-        "https://dreambigchildren.com/wp-content/uploads/2021/11/toddler-playgroups.jpeg",
+        "https://www.kidsplanetdaynurseries.co.uk/wp-content/uploads/2022/06/AdobeStock_96253396-2.jpeg",
       color: "#F5F5FF",
       description:
         "Our Nursery program bridges play and early education, introducing children to foundational concepts through creative play, storytelling, and interactive learning experiences.",
     },
   ];
 
-  // Preload images when component mounts
+  // Preload images
   useEffect(() => {
-    programs.forEach((program, index) => {
+    programs.forEach((program) => {
       const img = new Image();
       img.src = program.image;
-      img.onload = () => {
-        setImagesLoaded((prev) => ({
-          ...prev,
-          [index]: true,
-        }));
-      };
-      img.onerror = () => {
-        handleImageError(index);
-      };
     });
   }, []);
 
-  const handleImageError = (key) => {
-    setImageErrors((prev) => ({
-      ...prev,
-      [key]: true,
-    }));
+  // Function to handle auto swiping
+  const startAutoSwipe = () => {
+    if (autoSwipeTimerRef.current) {
+      clearInterval(autoSwipeTimerRef.current);
+    }
+
+    autoSwipeTimerRef.current = setInterval(() => {
+      if (!userInteracting && expandedCard === null && !isAnimating) {
+        handleNext();
+      }
+    }, 3000); // Auto swipe every 3 seconds
   };
+
+  // Initialize auto swipe on component mount
+  useEffect(() => {
+    startAutoSwipe();
+
+    // Cleanup interval on unmount
+    return () => {
+      if (autoSwipeTimerRef.current) {
+        clearInterval(autoSwipeTimerRef.current);
+      }
+    };
+  }, [userInteracting, expandedCard, isAnimating]);
 
   const handleNext = () => {
     if (isAnimating || expandedCard !== null) return;
@@ -79,6 +87,7 @@ const ProgramCarousel = () => {
 
   const handleTouchStart = (e) => {
     if (expandedCard !== null) return;
+    setUserInteracting(true);
     setStartX(e.touches[0].clientX);
   };
 
@@ -88,13 +97,25 @@ const ProgramCarousel = () => {
     const diff = startX - endX;
 
     if (Math.abs(diff) > 50) {
-      // Minimum swipe distance
       if (diff > 0) {
         handleNext();
       } else {
         handlePrev();
       }
     }
+
+    // Reset user interaction flag after a short delay
+    setTimeout(() => {
+      setUserInteracting(false);
+    }, 1000);
+  };
+
+  const handleMouseEnter = () => {
+    setUserInteracting(true);
+  };
+
+  const handleMouseLeave = () => {
+    setUserInteracting(false);
   };
 
   const handleCardClick = (index) => {
@@ -105,97 +126,35 @@ const ProgramCarousel = () => {
     }
   };
 
-  // Handle escape key to close expanded card
+  // Handle arrow button clicks
+  const handleArrowClick = (direction) => {
+    setUserInteracting(true);
+
+    if (direction === "next") {
+      handleNext();
+    } else {
+      handlePrev();
+    }
+
+    // Reset user interaction flag after a short delay
+    setTimeout(() => {
+      setUserInteracting(false);
+    }, 1000);
+  };
+
+  // Close expanded card when Escape key is pressed
   useEffect(() => {
     const handleEscKey = (e) => {
       if (e.key === "Escape" && expandedCard !== null) {
         setExpandedCard(null);
       }
     };
-
     window.addEventListener("keydown", handleEscKey);
     return () => window.removeEventListener("keydown", handleEscKey);
   }, [expandedCard]);
 
-  // Auto-rotation effect (only when no card is expanded)
-  useEffect(() => {
-    if (expandedCard !== null) return;
-
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [activeIndex, expandedCard]);
-
-  // Function to render image with fallback
-  const renderImage = (src, alt, idx, viewType = "card") => {
-    const uniqueKey = `${viewType}-${idx}`;
-
-    if (imageErrors[uniqueKey]) {
-      return (
-        <div className="w-full h-64 flex items-center justify-center bg-gray-200">
-          <div className="text-gray-500 text-center p-4">
-            <svg
-              className="w-12 h-12 mx-auto mb-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <p>Image could not be loaded</p>
-          </div>
-        </div>
-      );
-    }
-
-    // Use a forced fallback approach for card images
-    if (viewType === "card" && !imagesLoaded[idx]) {
-      // Show a loading state while the image is being loaded
-      return (
-        <div className="w-full h-64 flex items-center justify-center bg-gray-100">
-          <div className="text-gray-400 text-center">
-            <svg className="w-8 h-8 mx-auto animate-spin" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            <p className="mt-2">Loading image...</p>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <img
-        key={uniqueKey}
-        src={src}
-        alt={alt}
-        className="w-full h-64 object-cover"
-        onError={() => handleImageError(uniqueKey)}
-      />
-    );
-  };
-
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8 relative">
+    <div className="min-h-screen bg-sky-50 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="text-center mb-8">
         <h2 className="text-red-500 font-bold text-2xl mb-2">OUR PROGRAMS</h2>
         <h1 className="text-4xl font-bold text-purple-900">
@@ -203,23 +162,25 @@ const ProgramCarousel = () => {
         </h1>
       </div>
 
-      {/* Overlay for expanded card */}
+      {/* Expanded Card Modal */}
       {expandedCard !== null && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4"
+          className="fixed inset-0 backdrop-blur-md bg-sky-50 bg-opacity-70 z-40 flex items-center justify-center p-4"
           onClick={() => setExpandedCard(null)}
         >
           <div
-            className="bg-white rounded-lg shadow-2xl w-full max-w-lg transform transition-all duration-500 ease-in-out animate-rise"
+            className="bg-white rounded-lg w-full max-w-lg transform transition-all duration-500 ease-in-out animate-rise shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative">
-              {renderImage(
-                programs[expandedCard].image,
-                programs[expandedCard].title,
-                expandedCard,
-                "expanded"
-              )}
+              <img
+                src={programs[expandedCard].image}
+                alt={programs[expandedCard].title}
+                className="w-full h-64 object-cover rounded-t-lg"
+                onError={(e) => {
+                  e.target.src = "/api/placeholder/400/300";
+                }}
+              />
               <button
                 onClick={() => setExpandedCard(null)}
                 className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-lg hover:bg-gray-100 transition-all"
@@ -268,12 +229,16 @@ const ProgramCarousel = () => {
         className="relative overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
+        {/* Navigation Arrows */}
         {expandedCard === null && (
           <div className="flex justify-between items-center absolute top-1/2 w-full z-10 px-4 transform -translate-y-1/2">
             <button
-              onClick={handlePrev}
+              onClick={() => handleArrowClick("prev")}
               className="bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all"
+              aria-label="Previous program"
             >
               <svg
                 className="w-6 h-6"
@@ -290,8 +255,9 @@ const ProgramCarousel = () => {
               </svg>
             </button>
             <button
-              onClick={handleNext}
+              onClick={() => handleArrowClick("next")}
               className="bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all"
+              aria-label="Next program"
             >
               <svg
                 className="w-6 h-6"
@@ -310,91 +276,73 @@ const ProgramCarousel = () => {
           </div>
         )}
 
-        <div
-          className={`flex transition-transform duration-500 ease-in-out ${
-            expandedCard !== null ? "opacity-0" : "opacity-100"
-          }`}
-          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-        >
-          {programs.map((program, index) => (
-            <div key={index} className="w-full flex-shrink-0 px-4">
-              <div className="grid md:grid-cols-3 gap-6">
-                {programs.map((item, idx) => {
-                  // Calculate position relative to active item
-                  const position =
-                    (idx - activeIndex + programs.length) % programs.length;
-                  return (
-                    <div
-                      key={idx}
-                      className={`transform transition-all duration-500 ease-in-out cursor-pointer ${
-                        position === 0
-                          ? "scale-100 opacity-100"
-                          : position === 1 || position === programs.length - 1
-                          ? "scale-95 opacity-70"
-                          : "scale-90 opacity-50"
-                      }`}
-                      onClick={() => handleCardClick(idx)}
-                    >
-                      <div className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-                        <div className="relative bg-gray-200">
-                          {renderImage(item.image, item.title, idx, "card")}
-                          <div className="absolute inset-0 bg-black bg-opacity-20 hover:bg-opacity-10 transition-all flex items-center justify-center">
-                            <div className="bg-white bg-opacity-80 rounded-full p-2 transform translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
-                              <svg
-                                className="w-6 h-6 text-purple-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M5 15l7-7 7 7"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="p-6 rounded-b-lg"
-                          style={{ backgroundColor: item.color }}
+        {/* Carousel Cards */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {programs.map((program, idx) => {
+            const position =
+              (idx - activeIndex + programs.length) % programs.length;
+            return (
+              <div
+                key={idx}
+                className={`transform transition-all duration-500 ease-in-out cursor-pointer ${
+                  expandedCard !== null ? "opacity-0 pointer-events-none" : ""
+                } ${
+                  position === 0
+                    ? "scale-100 opacity-100 z-10"
+                    : position === 1 || position === programs.length - 1
+                    ? "scale-95 opacity-70"
+                    : "scale-90 opacity-50"
+                }`}
+                onClick={() => handleCardClick(idx)}
+              >
+                <div className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                  <div className="relative h-48">
+                    <img
+                      src={program.image}
+                      alt={program.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = "/api/placeholder/400/300";
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="p-6 rounded-b-lg"
+                    style={{ backgroundColor: program.color }}
+                  >
+                    <h3 className="text-2xl font-bold text-purple-900 mb-2">
+                      {program.title}
+                    </h3>
+                    <div className="w-16 h-1 bg-red-400 rounded mb-4"></div>
+                    <p className="text-gray-700 mb-4">
+                      <span className="font-bold">Age:</span> {program.age}
+                    </p>
+                    <div className="mt-4 flex justify-center">
+                      <div className="text-purple-600 font-medium inline-flex items-center">
+                        Click to view details
+                        <svg
+                          className="w-4 h-4 ml-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          <h3 className="text-2xl font-bold text-purple-900 mb-2">
-                            {item.title}
-                          </h3>
-                          <div className="w-16 h-1 bg-red-400 rounded mb-4"></div>
-                          <p className="text-gray-700">
-                            <span className="font-bold">Age:</span> {item.age}
-                          </p>
-                          <div className="mt-4 flex justify-center">
-                            <div className="text-purple-600 font-medium inline-flex items-center">
-                              Click to view details
-                              <svg
-                                className="w-4 h-4 ml-1"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
+        {/* Pagination Dots */}
         <div
           className={`flex justify-center mt-6 ${
             expandedCard !== null ? "opacity-0" : "opacity-100"
@@ -403,10 +351,17 @@ const ProgramCarousel = () => {
           {programs.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setActiveIndex(idx)}
+              onClick={() => {
+                setUserInteracting(true);
+                setActiveIndex(idx);
+                setTimeout(() => {
+                  setUserInteracting(false);
+                }, 1000);
+              }}
               className={`mx-1 w-3 h-3 rounded-full transition-all ${
                 idx === activeIndex ? "bg-red-500 w-6" : "bg-gray-300"
               }`}
+              aria-label={`Go to program ${idx + 1}`}
             />
           ))}
         </div>
